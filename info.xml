@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<extension key="de.systopia.l10nmo" type="module">
+  <file>l10nmo</file>
+  <name>Custom Translation Files</name>
+  <description>This extension allows you to provide custom translation files.</description>
+  <license>AGPL-3.0</license>
+  <maintainer>
+    <author>SYSTOPIA</author>
+    <email>endres@systopia.de</email>
+  </maintainer>
+  <urls>
+    <url desc="Main Extension Page">https://github.com/systopia/de.systopia.l10nmo</url>
+    <url desc="Documentation">https://github.com/systopia/de.systopia.l10nmo</url>
+    <url desc="Support">https://github.com/systopia/de.systopia.l10nmo/issues</url>
+    <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
+  </urls>
+  <releaseDate></releaseDate>
+  <version>0.1-dev</version>
+  <develStage>dev</develStage>
+  <compatibility>
+    <ver>5.0</ver>
+  </compatibility>
+  <requires>
+    <ext>org.civicrm.l10nx</ext>
+  </requires>
+  <comments></comments>
+  <civix>
+    <namespace>CRM/L10nmo</namespace>
+  </civix>
+</extension>
