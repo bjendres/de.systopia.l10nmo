@@ -1,0 +1,18 @@
+This folder stores multilanguage .mo files in a gettext file structure, i.e.
+[pack_name]
++[LOCALE]
+| +LC_MESSAGES
+| | +messages.mo
+
+e.g.
+"My_Custom_Translation"
++ de_DE
+| + LC_MESSAGES
+| | + messages.m
++ fr_FR
+| + LC_MESSAGES
+| | + messages.m
+
+If you want to upload mo packs via the UI, please make sure the webserver user has write permissions here.
+
+To successfully upload and mo pack it has to have the file structure outlined above starting with the locale (language), zipped in a single file.
