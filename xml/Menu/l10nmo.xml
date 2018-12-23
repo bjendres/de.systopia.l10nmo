@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/l10nx/custom</path>
+    <page_callback>CRM_L10nmo_Form_Configuration</page_callback>
+    <title>Configuration</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>

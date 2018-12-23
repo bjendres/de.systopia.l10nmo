@@ -151,30 +151,19 @@ function l10nmo_civicrm_entityTypes(&$entityTypes) {
   _l10nmo_civix_civicrm_entityTypes($entityTypes);
 }
 
-// --- Functions below this ship commented out. Uncomment as required. ---
-
-/**
- * Implements hook_civicrm_preProcess().
- *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_preProcess
- *
-function l10nmo_civicrm_preProcess($formName, &$form) {
-
-} // */
-
 /**
  * Implements hook_civicrm_navigationMenu().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
- *
+ */
 function l10nmo_civicrm_navigationMenu(&$menu) {
-  _l10nmo_civix_insert_navigation_menu($menu, 'Mailings', array(
-    'label' => E::ts('New subliminal message'),
-    'name' => 'mailing_subliminal_message',
-    'url' => 'civicrm/mailing/subliminal',
-    'permission' => 'access CiviMail',
+  _l10nmo_civix_insert_navigation_menu($menu, 'Administer/Localization', array(
+    'label' => E::ts('Custom Translation Files'),
+    'name' => 'l10nmo_config',
+    'url' => 'civicrm/l10nx/custom',
+    'permission' => 'administer CiviCRM',
     'operator' => 'OR',
     'separator' => 0,
   ));
   _l10nmo_civix_navigationMenu($menu);
-} // */
+}
