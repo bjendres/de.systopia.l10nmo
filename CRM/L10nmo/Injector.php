@@ -30,6 +30,19 @@ class CRM_L10nmo_Injector implements EventSubscriberInterface {
   protected $cache = [];
 
   /**
+   * @var array holds the configuration as specified in the form
+   */
+  protected $config = NULL;
+
+  public function __construct() {
+    $this->cache = [];
+    $this->config = CRM_Core_BAO_Setting::getItem( 'de.systopia.l10nmo', 'l10nmo_config');
+    if (!is_array($this->config)) {
+      $this->config = [];
+    }
+  }
+
+  /**
    * Define which events we subscribe to
    * @return array
    */
@@ -74,10 +87,49 @@ class CRM_L10nmo_Injector implements EventSubscriberInterface {
    * @param $mo_files
    * @return mixed
    */
-  public function amend_mo_files($locale, $domain, $context, $mo_files) {
-    // TODO: inject
-    return (array) $mo_files;
-    // return (array) $mo_files;
+  public function amend_mo_files($locale, $domain, $context, $given_mo_files) {
+    $my_mo_files = [];
+
+    // iterate through our items
+    foreach ($this->config as $config) {
+      // check the domain
+      if (!empty($config['domain'])) {
+        if ($config['domain'] != $domain) {
+          // no match
+          continue;
+        }
+      }
+
+      if ($config['type'] == 'f') {
+        // this is a "single file" configuration:
+        // check locale
+        if (!empty($config['locale'])) {
+          if ($locale != $config['locale']) {
+            continue;
+          }
+        }
+
+        if (!empty($config['file'])) {
+          $my_mo_files[] = $config['file'];
+        }
+
+      } else {
+        // this is a "pack" configuration:
+        if (!empty($config['pack'])) {
+          $file = $config['pack'] . DIRECTORY_SEPARATOR . $locale . DIRECTORY_SEPARATOR . 'LC_MESSAGES' . DIRECTORY_SEPARATOR . 'civicrm.mo';
+          if (file_exists($file)) {
+            $my_mo_files[] = $file;
+          }
+        }
+      }
+    }
+
+    // add the existing ones
+    foreach ($given_mo_files as $given_mo_file) {
+      $my_mo_files[] = $given_mo_file;
+    }
+
+    return $my_mo_files;
   }
 
 }
