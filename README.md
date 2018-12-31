@@ -1,44 +1,18 @@
-# de.systopia.l10nmo
+# Localisation Override Extension
 
 ![Screenshot](/images/screenshot.png)
 
-(*FIXME: In one or two paragraphs, describe what the extension does and why one would download it. *)
+This extension allows you to override the built-in translation files (.MOs) with your own.
+The system allows you to create cascades, e.g. a small .MO file containing only your
+changes, and all other strings would still be passed through the default translations.  
+
+This extension is particularly powerful in combination with SYSTOPIA's [Profiler extension](https://github.com/systopia/de.systopia.l10nprofiler),
+which helps you to capture the strings you want, and turn them into .MO files. 
 
 The extension is licensed under [AGPL-3.0](LICENSE.txt).
 
 ## Requirements
 
-* PHP v5.4+
-* CiviCRM (*FIXME: Version number*)
-
-## Installation (Web UI)
-
-This extension has not yet been published for installation via the web UI.
-
-## Installation (CLI, Zip)
-
-Sysadmins and developers may download the `.zip` file for this extension and
-install it with the command-line tool [cv](https://github.com/civicrm/cv).
-
-```bash
-cd <extension-dir>
-cv dl de.systopia.l10nmo@https://github.com/FIXME/de.systopia.l10nmo/archive/master.zip
-```
-
-## Installation (CLI, Git)
-
-Sysadmins and developers may clone the [Git](https://en.wikipedia.org/wiki/Git) repo for this extension and
-install it with the command-line tool [cv](https://github.com/civicrm/cv).
-
-```bash
-git clone https://github.com/FIXME/de.systopia.l10nmo.git
-cv en l10nmo
-```
-
-## Usage
-
-(* FIXME: Where would a new user navigate to get started? What changes would they see? *)
-
-## Known Issues
-
-(* FIXME *)
+* [l10nx Extension](https://github.com/systopia/org.civicrm.l10nx)
+* PHP v5.6+
+* CiviCRM 5.5+
