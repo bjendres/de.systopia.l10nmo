@@ -95,7 +95,6 @@ class CRM_L10nmo_Form_Configuration extends CRM_Core_Form {
       ),
     ));
 
-    // export form elements
     parent::buildQuickForm();
   }
 
