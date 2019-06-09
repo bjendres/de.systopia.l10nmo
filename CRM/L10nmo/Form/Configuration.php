@@ -29,50 +29,127 @@ class CRM_L10nmo_Form_Configuration extends CRM_Core_Form {
   protected $packs   = NULL;
   protected $locales = NULL;
 
-  public function buildQuickForm() {
-    CRM_Utils_System::setTitle(E::ts("Configure Custom Translation (.mo) Files"));
+  /**
+   * Get the folder where the custom translations are stored.
+   *
+   * @param bool $packs
+   */
+  public static function getCustomTranslationFolder($packs = FALSE) {
+    if ($packs) {
+      $folder = E::path('mo_store/mopacks');
+    } else {
+      $folder = E::path('mo_store/mofiles');
+    }
+    return $folder;
+  }
 
-    for ($i = 1; $i <= L10NMO_CONFIG_COUNT; $i++) {
+  /**
+   * Get the current configuration
+   * Each entry in the array has the following entries:
+   *  'type': 'f', 'p' (file or pack)
+   *  'path': path relative to mo_store
+   *  'active': true/false
+   *  'domains': list of domains this applies to
+   *  'locales': list of locales this applies to
+   *  'file_id': ID of a civicrm_file
+   *
+   * @param $include_new_files boolean add new, unused files
+   * @return array list of custom translations
+   */
+  public static function getConfiguration($include_new_files = FALSE) {
+    $configuration = CRM_Core_BAO_Setting::getItem( 'de.systopia.l10nmo', 'l10nmo_config');
+    if (!is_array($configuration)) {
+      $configuration = [];
+    }
+
+    // TODO: testing - remove
+    $configuration = [];
+
+    if ($include_new_files) {
+      $file_query = civicrm_api3('File', 'get', [
+          'mime_type'    => 'application/x-gettext-translation',
+          'option.limit' => 0,
+          'sequential'   => 0,
+      ]);
+      $files = $file_query['values'];
+      $missing_files = $files;
+
+      // match files to the configuration
+      foreach ($configuration as &$config) {
+        $file_id = $config['file_id'];
+        if (isset($files[$file_id])) {
+          $file = $files[$file_id];
+          $config['description'] = $file['description'];
+          $config['upload_date'] = $file['upload_date'];
+          $config['created_id']  = $file['created_id'];
+          unset($missing_files[$file_id]);
+        } else {
+          // TODO: file is missing -> clean up!
+        }
+      }
+
+      // add missing files
+      foreach ($missing_files as $file) {
+        if (substr($file['uri'], 0, 8) == 'l10nxmo:') {
+          $type = 'f';
+          $name = substr($file['uri'], 8);
+          $path = CRM_L10nmo_Form_Configuration::getCustomTranslationFolder(FALSE) . DIRECTORY_SEPARATOR . $name;
+        } elseif (substr($file['uri'], 0, 10) == 'l10nxpack:') {
+          $type = 'p';
+          $name = substr($file['uri'], 10);
+          $path = CRM_L10nmo_Form_Configuration::getCustomTranslationFolder(TRUE) . DIRECTORY_SEPARATOR . $name;
+        } else {
+          // noe of ours
+          continue;
+        }
+
+        // add to list
+        $configuration[] = [
+            'type'        => $type,
+            'path'        => $path,
+            'name'        => $name,
+            'active'      => 0,
+            'domains'     => [],
+            'locales'     => [],
+            'created_id'  => $file['created_id'],
+            'description' => $file['description'],
+            'upload_date' => $file['upload_date'],
+            'file_id'     => $file['id'],
+        ];
+      }
+    }
+
+    return $configuration;
+  }
+
+  public function buildQuickForm() {
+    CRM_Utils_System::setTitle(E::ts("Configure Custom Translation Files"));
+
+    $configuration = self::getConfiguration(TRUE);
+    $domains = $this->getDomains();
+    $locales = $this->getLocales();
+    foreach ($configuration as $i => $config) {
       $this->add(
           'select',
           "domain_{$i}",
           E::ts("Domain"),
-          $this->getDomains()
-      );
-
-      $this->add(
-          'select',
-          "type_{$i}",
-          E::ts("Type"),
-          ['p' => E::ts('Pack'), 'f' => E::ts('File')],
-          TRUE,
-          ['class' => 'l10nmo-type']
-      );
-
-      $this->add(
-          'select',
-          "pack_{$i}",
-          E::ts("Pack"),
-          $this->getPacks()
-      );
-
-      $this->add(
-          'select',
-          "file_{$i}",
-          E::ts("File"),
-          $this->getFiles()
+          $domains,
+          FALSE,
+          ['class' => 'crm-select2', 'multiple' => 'multiple', 'placeholder' => E::ts("all domains")]
       );
 
       $this->add(
           'select',
           "locale_{$i}",
-          E::ts("Locale"),
-          $this->getLocales()
+          E::ts("Locales"),
+          $locales,
+          FALSE,
+          ['class' => 'crm-select2', 'multiple' => 'multiple', 'placeholder' => E::ts("all locales")]
       );
     }
-    $this->assign('lines', range(1, L10NMO_CONFIG_COUNT + 1));
+    $this->assign('lines', $configuration);
 
-    // load and set default config
+    // set default config
     $configuration = CRM_Core_BAO_Setting::getItem( 'de.systopia.l10nmo', 'l10nmo_config');
     if (!empty($configuration)) {
       foreach ($configuration as $line_nr => $config) {
@@ -87,19 +164,30 @@ class CRM_L10nmo_Form_Configuration extends CRM_Core_Form {
       }
     }
 
-    $this->addButtons(array(
-      array(
+    $this->addButtons([
+      [
           'type'      => 'submit',
           'name'      => E::ts('Save'),
           'isDefault' => TRUE,
-      ),
-    ));
+      ],
+      [
+          'type'      => 'upload',
+          'icon'      => 'fa-plus-circle',
+          'name'      => E::ts('Upload More'),
+          'isDefault' => FALSE,
+      ],
+    ]);
 
     parent::buildQuickForm();
   }
 
   public function postProcess() {
     $values = $this->exportValues();
+
+    if (isset($values['_qf_Configuration_upload'])) {
+      // this is the upload button
+      CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/l10nx/custom_upload', 'reset=1'));
+    }
 
     // compile configuration
     $configuration = [];
@@ -129,8 +217,10 @@ class CRM_L10nmo_Form_Configuration extends CRM_Core_Form {
    */
   protected function getDomains() {
     if ($this->domains === NULL) {
-      $this->domains = ['' => E::ts("Any")];
+      $this->domains = [];
       $this->domains['civicrm'] = E::ts("civicrm: Main CiviCRM");
+      $this->domains['civicrm-options'] = E::ts("civicrm: Options");
+      $this->domains['civicrm-data'] = E::ts("civicrm: User Data");
 
       // add extensions
       try {
@@ -147,53 +237,13 @@ class CRM_L10nmo_Form_Configuration extends CRM_Core_Form {
   }
 
   /**
-   * Get available packs
-   *
-   * @return array|null
-   */
-  protected function getPacks() {
-    if ($this->packs === NULL) {
-      $this->packs = ['' => E::ts("None")];
-      $folder = E::path('mo_store/mopacks');
-      $files = scandir($folder);
-      foreach ($files as $file) {
-        $filename = $folder . DIRECTORY_SEPARATOR . $file;
-        if (is_dir($filename) && $file[0] != '.') {
-          $this->packs[$filename] = $file;
-        }
-      }
-    }
-    return $this->packs;
-  }
-
-  /**
-   * Get available individual files
-   *
-   * @return array|null
-   */
-  protected function getFiles() {
-    if ($this->files === NULL) {
-      $this->files = ['' => E::ts("None")];
-      $folder = E::path('mo_store/mofiles');
-      $files = scandir($folder);
-      foreach ($files as $file) {
-        $suffix = mb_substr($file, mb_strlen($file) - 3);
-        if ($suffix == '.mo') {
-          $this->files[$folder . DIRECTORY_SEPARATOR . $file] = mb_substr($file, 0, mb_strlen($file) - 3);
-        }
-      }
-    }
-    return $this->files;
-  }
-
-  /**
    * Get available locales
    *
    * @return array|null
    */
   protected function getLocales() {
     if ($this->locales === NULL) {
-      $this->locales = ['' => E::ts("Any")] + CRM_Core_I18n::languages(FALSE);
+      $this->locales = CRM_Core_I18n::languages(FALSE);
     }
     return $this->locales;
   }

@@ -6,4 +6,10 @@
     <title>Configuration</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/l10nx/custom_upload</path>
+    <page_callback>CRM_L10nmo_Form_Upload</page_callback>
+    <title>Upload</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>

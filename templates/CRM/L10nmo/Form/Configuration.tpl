@@ -15,29 +15,33 @@
 <table class="l10nmo-config">
   <thead>
     <tr>
-      <th>{ts domain="de.systopia.l10nmo"}Domain{/ts}</th>
-      <th>{ts domain="de.systopia.l10nmo"}Type{/ts}</th>
-      <th>{ts domain="de.systopia.l10nmo"}Specification{/ts}</th>
+      <th>{ts domain="de.systopia.l10nmo"}File{/ts}</th>
+      <th>{ts domain="de.systopia.l10nmo"}Domains{/ts}</th>
+      <th>{ts domain="de.systopia.l10nmo"}Locales{/ts}</th>
+      <th>{ts domain="de.systopia.l10nmo"}Upload{/ts}</th>
+      <th>{ts domain="de.systopia.l10nmo"}Order{/ts}</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
-  {foreach from=$lines item=line_nr}
+  {foreach from=$lines key=line_nr item=line}
     {capture assign="domain"}domain_{$line_nr}{/capture}
-    {capture assign="type"}type_{$line_nr}{/capture}
-    {capture assign="pack"}pack_{$line_nr}{/capture}
-    {capture assign="file"}file_{$line_nr}{/capture}
     {capture assign="locale"}locale_{$line_nr}{/capture}
     <tr>
+      <td>
+        <span title="{$line.description}"><code>{$line.name}</code> ({if $line.type == 'f'}MO File{else}PACK{/if})</span>
+      </td>
       <td>
         {$form.$domain.html}
       </td>
       <td>
-        {$form.$type.html}
+        {$form.$locale.html}
       </td>
       <td>
-        <span class="l10nmo-pack">{$form.$pack.html}</span>
-        <span class="l10nmo-file">{$form.$locale.html} {$form.$file.html}</span>
+        {ts domain="de.systopia.l10nmo" 1=$line.upload_date 2=$line.created_id}Uploaded on %1 by %2{/ts}
       </td>
+      <td>TODO</td>
+      <td>TODO</td>
     </tr>
   {/foreach}
   </tbody>

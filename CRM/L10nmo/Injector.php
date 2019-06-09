@@ -36,7 +36,7 @@ class CRM_L10nmo_Injector implements EventSubscriberInterface {
 
   public function __construct() {
     $this->cache = [];
-    $this->config = CRM_Core_BAO_Setting::getItem( 'de.systopia.l10nmo', 'l10nmo_config');
+    $this->config = CRM_L10nmo_Form_Configuration::getConfiguration();
     if (!is_array($this->config)) {
       $this->config = [];
     }
