@@ -12,4 +12,10 @@
     <title>Upload</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/l10nx/templates</path>
+    <page_callback>CRM_L10nmo_Form_Generator</page_callback>
+    <title>Generator</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>

@@ -1,7 +1,7 @@
 <?php
 /*-------------------------------------------------------+
 | L10n Profiling Extension                               |
-| Copyright (C) 2018 SYSTOPIA                            |
+| Copyright (C) 2019 SYSTOPIA                            |
 | Author: B. Endres (endres@systopia.de)                 |
 +--------------------------------------------------------+
 | This program is released as free software under the    |
@@ -200,9 +200,9 @@ class CRM_L10nmo_Form_Configuration extends CRM_Core_Form {
   protected function getDomains() {
     if ($this->domains === NULL) {
       $this->domains = [];
-      $this->domains['civicrm'] = E::ts("civicrm: Main CiviCRM");
-      $this->domains['civicrm-options'] = E::ts("civicrm: Options");
-      $this->domains['civicrm-data'] = E::ts("civicrm: User Data");
+      $this->domains['civicrm']        = E::ts("civicrm: Main CiviCRM");
+      $this->domains['civicrm-option'] = E::ts("civicrm: Options");
+      $this->domains['civicrm-data']   = E::ts("civicrm: User Data");
 
       // add extensions
       try {

@@ -74,7 +74,7 @@
   <p>{ts domain="de.systopia.l10nmo"}You can define for each uploaded translation file you have define which domain it is applied to:{/ts}
     <ul>
       <li><code>civicrm</code>: {ts domain="de.systopia.l10nmo"}CiviCRM User Interface. This should already be covered by CiviCRM's l10n pack, but you might want to use this to overwrite some translations.{/ts}</li>
-      <li><code>civicrm-options</code>: {ts domain="de.systopia.l10nmo"}Defines the translation of all dropdown values (called OptionValues). These values should be stored in the 'data language' (e.g. English) and can then be translated on the fly for users in other languages. <strong>(experimental!)</strong>{/ts}</li>
+      <li><code>civicrm-option</code>: {ts domain="de.systopia.l10nmo"}Defines the translation of all dropdown values (called OptionValues). These values should be stored in the 'data language' (e.g. English) and can then be translated on the fly for users in other languages. <strong>(experimental!)</strong>{/ts}</li>
       <li><code>civicrm-data</code>: {ts domain="de.systopia.l10nmo"}Offers translations for user generated data, e.g. event descriptions or activity subjects. <strong>(under development, experimental!)</strong>{/ts}</li>
       <li><code>[extensions]</code>: {ts domain="de.systopia.l10nmo"}Each extension defines its own translation domain. Choose this to modify the translation of an extension's user interface. Remark: the extension has to use the correct localisation techniques for this to work.{/ts}</li>
     </ul>
