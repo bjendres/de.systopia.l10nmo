@@ -37,7 +37,7 @@ class CRM_L10nmo_Form_Upload extends CRM_Core_Form {
         'select',
         "type",
         E::ts("Type"),
-        ['p' => E::ts('Language Pack (.ZIP file)'), 'f' => E::ts('Single File (.MO file)')],
+        ['f' => E::ts('Single File (.MO file)'), 'p' => E::ts('Language Pack (.ZIP file)')],
         TRUE,
         ['class' => 'l10nmo-type']
     );

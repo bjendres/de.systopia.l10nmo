@@ -15,8 +15,6 @@
 
 use CRM_L10nmo_ExtensionUtil as E;
 
-define("L10NMO_CONFIG_COUNT", 5);
-
 /**
  * Form controller class
  *
@@ -25,9 +23,168 @@ define("L10NMO_CONFIG_COUNT", 5);
 class CRM_L10nmo_Form_Configuration extends CRM_Core_Form {
 
   protected $domains = NULL;
-  protected $files   = NULL;
-  protected $packs   = NULL;
   protected $locales = NULL;
+
+
+  public function buildQuickForm() {
+    CRM_Utils_System::setTitle(E::ts("Configure Custom Translation Files"));
+
+    $configuration = self::getConfiguration(TRUE);
+    $domains = $this->getDomains();
+    $locales = $this->getLocales();
+    foreach ($configuration as $i => $config) {
+      $this->add('hidden', "info_{$i}", json_encode($config));
+
+      $this->add(
+          'checkbox',
+          "active_{$i}",
+          E::ts("Active?")
+      );
+
+      $this->add(
+          'select',
+          "domain_{$i}",
+          E::ts("Domain"),
+          $domains,
+          FALSE,
+          ['class' => 'crm-select2', 'multiple' => 'multiple', 'placeholder' => E::ts("all domains")]
+      );
+
+      $this->add(
+          'select',
+          "locale_{$i}",
+          E::ts("Locales"),
+          $locales,
+          FALSE,
+          ['class' => 'crm-select2', 'multiple' => 'multiple', 'placeholder' => E::ts("all locales")]
+      );
+
+      // set default values
+      $this->setDefaults([
+          "active_{$i}" => $config['active'],
+          "domain_{$i}" => $config['domains'],
+          "locale_{$i}" => $config['locales'],
+      ]);
+    }
+
+    // infrastructure
+    $this->assign('lines', $configuration);
+    $this->add('hidden', 'l10nx_command', '');
+
+    $this->addButtons([
+      [
+          'type'      => 'submit',
+          'name'      => E::ts('Save'),
+          'isDefault' => TRUE,
+      ],
+      [
+          'type'      => 'upload',
+          'icon'      => 'fa-plus-circle',
+          'name'      => E::ts('Upload More'),
+          'isDefault' => FALSE,
+      ],
+    ]);
+
+    parent::buildQuickForm();
+  }
+
+
+  public function postProcess() {
+    $values = $this->exportValues();
+
+    if (isset($values['_qf_Configuration_upload'])) {
+      // this is the upload button
+      CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/l10nx/custom_upload', 'reset=1'));
+    }
+
+    // compile configuration
+    $configuration = [];
+    $i = 0;
+    while (isset($values["info_{$i}"])) {
+      $info            = json_decode($values["info_{$i}"], TRUE);
+      $configuration[] = [
+          'path'    => $info['path'],
+          'type'    => $info['type'],
+          'name'    => $info['name'],
+          'file_id' => $info['file_id'],
+          'active'  => empty($values["active_{$i}"]) ? '0' : '1',
+          'domains' => $values["domain_{$i}"],
+          'locales' => $values["locale_{$i}"],
+      ];
+      $i += 1;
+    }
+
+    // exec command
+    $redirect_url = $this->executeCommand($values['l10nx_command'], $configuration);
+
+    // store settings
+    CRM_Core_BAO_Setting::setItem($configuration, 'de.systopia.l10nmo', 'l10nmo_config');
+
+    // redirect if requested
+    if ($redirect_url) {
+      CRM_Utils_System::redirect($redirect_url);
+    }
+
+    parent::postProcess();
+  }
+
+  /**
+   * Execute any command passed to with the submission
+   *
+   * @param $action        string action command
+   * @param $configuration array current configuration before saving
+   * @return string URL for redirect, if the command asks for it
+   */
+  protected function executeCommand($action, &$configuration) {
+    if (empty($action)) {
+      return NULL;
+    }
+
+    // split command
+    list($command, $index) = explode(':', $action, 2);
+    $new_index = NULL;
+    switch ($command) {
+      case 'first':
+        $new_index = 0;
+        break;
+
+      case 'up':
+        $new_index = max(0, $index-1);
+        break;
+
+      case 'down':
+        $new_index = min(count($configuration)-1, $index+1);
+        break;
+
+      case 'last':
+        $new_index = count($configuration)-1;
+        break;
+
+      case 'delete':
+        self::deleteData($configuration[$index]);
+        array_splice($configuration, $index, 1);
+        CRM_Core_Session::setStatus(E::ts("Translation file(s) deleted."), E::ts("Success"), 'info');
+        return CRM_Utils_System::url('civicrm/l10nx/custom', 'reset=1');
+        break;
+
+      case 'update':
+        return CRM_Utils_System::url('civicrm/l10nx/custom_upload', 'reset=1&update=' . $configuration[$index]['file_id']);
+        break;
+
+      default:
+        // Unknown command
+        return NULL;
+    }
+
+    // process order changes
+    if ($new_index !== NULL) {
+      // copied from https://stackoverflow.com/questions/12624153/move-an-array-element-to-a-new-index-in-php
+      $out = array_splice($configuration, $index, 1);
+      array_splice($configuration, $new_index, 0, $out);
+      return CRM_Utils_System::url('civicrm/l10nx/custom', 'reset=1');
+    }
+  }
+
 
   /**
    * Get the folder where the custom translations are stored.
@@ -62,9 +219,6 @@ class CRM_L10nmo_Form_Configuration extends CRM_Core_Form {
       $configuration = [];
     }
 
-    // TODO: testing - remove
-    $configuration = [];
-
     if ($include_new_files) {
       $file_query = civicrm_api3('File', 'get', [
           'mime_type'    => 'application/x-gettext-translation',
@@ -79,9 +233,8 @@ class CRM_L10nmo_Form_Configuration extends CRM_Core_Form {
         $file_id = $config['file_id'];
         if (isset($files[$file_id])) {
           $file = $files[$file_id];
-          $config['description'] = $file['description'];
+          $config['description'] = CRM_Utils_Array::value('description', $file, '');
           $config['upload_date'] = $file['upload_date'];
-          $config['created_id']  = $file['created_id'];
           unset($missing_files[$file_id]);
         } else {
           // TODO: file is missing -> clean up!
@@ -111,7 +264,6 @@ class CRM_L10nmo_Form_Configuration extends CRM_Core_Form {
             'active'      => 0,
             'domains'     => [],
             'locales'     => [],
-            'created_id'  => $file['created_id'],
             'description' => $file['description'],
             'upload_date' => $file['upload_date'],
             'file_id'     => $file['id'],
@@ -122,95 +274,51 @@ class CRM_L10nmo_Form_Configuration extends CRM_Core_Form {
     return $configuration;
   }
 
-  public function buildQuickForm() {
-    CRM_Utils_System::setTitle(E::ts("Configure Custom Translation Files"));
-
-    $configuration = self::getConfiguration(TRUE);
-    $domains = $this->getDomains();
-    $locales = $this->getLocales();
-    foreach ($configuration as $i => $config) {
-      $this->add(
-          'select',
-          "domain_{$i}",
-          E::ts("Domain"),
-          $domains,
-          FALSE,
-          ['class' => 'crm-select2', 'multiple' => 'multiple', 'placeholder' => E::ts("all domains")]
-      );
-
-      $this->add(
-          'select',
-          "locale_{$i}",
-          E::ts("Locales"),
-          $locales,
-          FALSE,
-          ['class' => 'crm-select2', 'multiple' => 'multiple', 'placeholder' => E::ts("all locales")]
-      );
-    }
-    $this->assign('lines', $configuration);
-
-    // set default config
-    $configuration = CRM_Core_BAO_Setting::getItem( 'de.systopia.l10nmo', 'l10nmo_config');
-    if (!empty($configuration)) {
-      foreach ($configuration as $line_nr => $config) {
-        $i = $line_nr + 1;
-        $this->setDefaults([
-            "type_{$i}"   => $config['type'],
-            "file_{$i}"   => $config['file'],
-            "pack_{$i}"   => $config['pack'],
-            "domain_{$i}" => $config['domain'],
-            "locale_{$i}" => $config['locale'],
-        ]);
-      }
+  /**
+   * Delete the file entity and the connected files of the given config entry
+   *
+   * @param $config array configuration
+   */
+  public static function deleteData($config) {
+    // delete the files
+    if ($config['type'] == 'f') {
+      unlink($config['path']);
+    } else {
+      self::rrmdir($config['path']);
     }
 
-    $this->addButtons([
-      [
-          'type'      => 'submit',
-          'name'      => E::ts('Save'),
-          'isDefault' => TRUE,
-      ],
-      [
-          'type'      => 'upload',
-          'icon'      => 'fa-plus-circle',
-          'name'      => E::ts('Upload More'),
-          'isDefault' => FALSE,
-      ],
-    ]);
-
-    parent::buildQuickForm();
-  }
-
-  public function postProcess() {
-    $values = $this->exportValues();
-
-    if (isset($values['_qf_Configuration_upload'])) {
-      // this is the upload button
-      CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/l10nx/custom_upload', 'reset=1'));
+    // delete the entity
+    // broken: civicrm_api3('File', 'delete', ['id' => $config['file_id']]);
+    $file_id = (int) $config['file_id'];
+    if ($file_id) {
+      CRM_Core_DAO::executeQuery("DELETE FROM civicrm_file WHERE id = {$file_id};");
     }
-
-    // compile configuration
-    $configuration = [];
-    for ($i = 1; $i <= L10NMO_CONFIG_COUNT; $i++) {
-      if (   $values["type_{$i}"] == 'p' && !empty($values["pack_{$i}"])
-          || $values["type_{$i}"] == 'f' && !empty($values["file_{$i}"])) {
-        // there is something configured here...
-        $configuration[] = [
-            'type' => $values["type_{$i}"],
-            'file' => $values["file_{$i}"],
-            'pack' => $values["pack_{$i}"],
-            'domain' => $values["domain_{$i}"],
-            'locale' => $values["locale_{$i}"]
-        ];
-      }
-    }
-
-    CRM_Core_BAO_Setting::setItem($configuration, 'de.systopia.l10nmo', 'l10nmo_config');
-    parent::postProcess();
   }
 
 
   /**
+   * Recursively deletes a directory
+   * Copied from StackExchange
+   *
+   * @see https://stackoverflow.com/questions/3338123/how-do-i-recursively-delete-a-directory-and-its-entire-contents-files-sub-dir
+   */
+  private static function rrmdir($dir) {
+    if (is_dir($dir)) {
+      $objects = scandir($dir);
+      foreach ($objects as $object) {
+        if ($object != "." && $object != "..") {
+          if (is_dir($dir."/".$object))
+            self::rrmdir($dir."/".$object);
+          else
+            unlink($dir."/".$object);
+        }
+      }
+      rmdir($dir);
+    }
+  }
+
+
+/**
    * Get available domains
    *
    * @return array|null

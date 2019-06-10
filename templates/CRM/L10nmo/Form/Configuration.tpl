@@ -15,6 +15,7 @@
 <table class="l10nmo-config">
   <thead>
     <tr>
+      <th></th>
       <th>{ts domain="de.systopia.l10nmo"}File{/ts}</th>
       <th>{ts domain="de.systopia.l10nmo"}Domains{/ts}</th>
       <th>{ts domain="de.systopia.l10nmo"}Locales{/ts}</th>
@@ -25,11 +26,17 @@
   </thead>
   <tbody>
   {foreach from=$lines key=line_nr item=line}
+    {capture assign="active"}active_{$line_nr}{/capture}
     {capture assign="domain"}domain_{$line_nr}{/capture}
     {capture assign="locale"}locale_{$line_nr}{/capture}
+    {capture assign="info"}info_{$line_nr}{/capture}
+    {$form.$info.html}
     <tr>
       <td>
-        <span title="{$line.description}"><code>{$line.name}</code> ({if $line.type == 'f'}MO File{else}PACK{/if})</span>
+        {$form.$active.html}
+      </td>
+      <td>
+        <span title="{$line.description}"><code>{$line.name}</code>{if $line.type == 'p'}> {ts domain="de.systopia.l10nmo"}(pack){/ts}{/if}</span>
       </td>
       <td>
         {$form.$domain.html}
@@ -38,10 +45,18 @@
         {$form.$locale.html}
       </td>
       <td>
-        {ts domain="de.systopia.l10nmo" 1=$line.upload_date 2=$line.created_id}Uploaded on %1 by %2{/ts}
+        {$line.upload_date|crmDate}
       </td>
-      <td>TODO</td>
-      <td>TODO</td>
+      <td>
+        <a class="crm-weight-arrow" onclick="l10nx_execute_command('first:{$line_nr}');"><img src="{$config->userFrameworkResourceURL}/i/arrow/first.gif" title="{ts domain="de.systopia.l10nmo"}Move to top{/ts}" alt="{ts domain="de.systopia.l10nmo"}Move to top{/ts}" class="order-icon"></a>
+        <a class="crm-weight-arrow" onclick="l10nx_execute_command('up:{$line_nr}');"><img src="{$config->userFrameworkResourceURL}/i/arrow/up.gif" title="{ts domain="de.systopia.l10nmo"}Move up one row{/ts}" alt="{ts domain="de.systopia.l10nmo"}Move up one row{/ts}" class="order-icon"></a>
+        <a class="crm-weight-arrow" onclick="l10nx_execute_command('down:{$line_nr}');"><img src="{$config->userFrameworkResourceURL}/i/arrow/down.gif" title="{ts domain="de.systopia.l10nmo"}Move down one row{/ts}" alt="{ts domain="de.systopia.l10nmo"}Move down one row{/ts}" class="order-icon"></a>
+        <a class="crm-weight-arrow" onclick="l10nx_execute_command('last:{$line_nr}');"><img src="{$config->userFrameworkResourceURL}/i/arrow/last.gif" title="{ts domain="de.systopia.l10nmo"}Move to bottom{/ts}" alt="{ts domain="de.systopia.l10nmo"}Move to bottom{/ts}" class="order-icon"></a>
+      </td>
+      <td>
+        <a class="action-item crm-hover-button l10n-action-delete" onclick="l10nx_execute_command('delete:{$line_nr}');" title="{ts domain="de.systopia.l10nmo"}Delete Translation Files{/ts}">{ts domain="de.systopia.l10nmo"}delete{/ts}</a>
+        <a class="action-item crm-hover-button l10n-action-update" onclick="l10nx_execute_command('update:{$line_nr}');" title="{ts domain="de.systopia.l10nmo"}Update Translation Files{/ts}">{ts domain="de.systopia.l10nmo"}update{/ts}</a>
+      </td>
     </tr>
   {/foreach}
   </tbody>
@@ -51,34 +66,16 @@
 <div class="crm-submit-buttons">
 {include file="CRM/common/formButtons.tpl" location="bottom"}
 </div>
+
+
 {literal}
-<script type="application/javascript">
-  /**
-   * This function makes sure, that only the selected
-   *  specification (pack or file) is shown
-   *
-   * @param select the select field
-   */
-  function adjust_type(select) {
-    console.log(select);
-    let type = cj(select).val();
-    if (type == 'p') {
-      cj(select).parent().parent().find("span.l10nmo-pack").show();
-      cj(select).parent().parent().find("span.l10nmo-file").hide();
-    } else {
-      cj(select).parent().parent().find("span.l10nmo-pack").hide();
-      cj(select).parent().parent().find("span.l10nmo-file").show();
+  <script type="application/javascript">
+    /**
+     * This will set the action parameter and then submit the form
+     */
+    function l10nx_execute_command(action_name) {
+      cj("input[name=l10nx_command]").val(action_name);
+      cj("input[name=l10nx_command]").closest("form").submit();
     }
-  }
-
-  // run initially
-  cj("select.l10nmo-type").each(function() {
-    adjust_type(cj(this));
-  });
-
-  // add handler
-  cj("select.l10nmo-type").change(function(event) {
-    adjust_type(event.target);
-  });
-</script>
+  </script>
 {/literal}
