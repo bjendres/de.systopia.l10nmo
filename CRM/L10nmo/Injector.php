@@ -92,31 +92,34 @@ class CRM_L10nmo_Injector implements EventSubscriberInterface {
 
     // iterate through our items
     foreach ($this->config as $config) {
-      // check the domain
-      if (!empty($config['domain'])) {
-        if ($config['domain'] != $domain) {
-          // no match
-          continue;
-        }
+      // check of config active
+      if (empty($config['active'])) {
+        // config disabled
+        continue;
       }
 
-      if ($config['type'] == 'f') {
-        // this is a "single file" configuration:
-        // check locale
-        if (!empty($config['locale'])) {
-          if ($locale != $config['locale']) {
-            continue;
-          }
-        }
+      // check the domain
+      if (!empty($config['domains']) && !in_array($domain, $config['domains'])) {
+        // no match
+        continue;
+      }
 
-        if (!empty($config['file'])) {
-          $my_mo_files[] = $config['file'];
+      // check the locale
+      if (!empty($config['locales']) && !in_array($locale, $config['locales'])) {
+        // no match
+        continue;
+      }
+
+
+      if ($config['type'] == 'f') {
+        if (!empty($config['path'])) {
+          $my_mo_files[] = $config['path'];
         }
 
       } else {
         // this is a "pack" configuration:
-        if (!empty($config['pack'])) {
-          $file = $config['pack'] . DIRECTORY_SEPARATOR . $locale . DIRECTORY_SEPARATOR . 'LC_MESSAGES' . DIRECTORY_SEPARATOR . 'civicrm.mo';
+        if (!empty($config['path'])) {
+          $file = $config['path'] . DIRECTORY_SEPARATOR . $locale . DIRECTORY_SEPARATOR . 'LC_MESSAGES' . DIRECTORY_SEPARATOR . 'civicrm.mo';
           if (file_exists($file)) {
             $my_mo_files[] = $file;
           }

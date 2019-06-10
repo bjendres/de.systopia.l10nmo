@@ -264,7 +264,7 @@ class CRM_L10nmo_Form_Configuration extends CRM_Core_Form {
             'active'      => 0,
             'domains'     => [],
             'locales'     => [],
-            'description' => $file['description'],
+            'description' => CRM_Utils_Array::value('description', $file, ''),
             'upload_date' => $file['upload_date'],
             'file_id'     => $file['id'],
         ];
@@ -295,6 +295,23 @@ class CRM_L10nmo_Form_Configuration extends CRM_Core_Form {
     }
   }
 
+  /**
+   * Count the number of languages in the path
+   * @param $path string path of the base folder
+   */
+  public static function getPackLanguageCount($path) {
+    $file_count = 0;
+    $folders = scandir($path);
+    foreach ($folders as $folder) {
+      if (preg_match('/^[a-z][a-z]_[A-Z][A-Z]$/', $folder)) {
+        $potential_mo_file = $path . DIRECTORY_SEPARATOR . $folder . '/LC_MESSAGES/civicrm.mo';
+        if (file_exists($potential_mo_file)) {
+          $file_count += 1;
+        }
+      }
+    }
+    return $file_count;
+  }
 
   /**
    * Recursively deletes a directory
@@ -302,7 +319,7 @@ class CRM_L10nmo_Form_Configuration extends CRM_Core_Form {
    *
    * @see https://stackoverflow.com/questions/3338123/how-do-i-recursively-delete-a-directory-and-its-entire-contents-files-sub-dir
    */
-  private static function rrmdir($dir) {
+  public static function rrmdir($dir) {
     if (is_dir($dir)) {
       $objects = scandir($dir);
       foreach ($objects as $object) {

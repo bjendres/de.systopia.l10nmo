@@ -141,7 +141,14 @@ class CRM_L10nmo_Form_Upload extends CRM_Core_Form {
       $zip->extractTo($target_path);
       $zip->close();
 
-      // TODO: verify extracted files?
+      // verify extracted files
+      $language_count = CRM_L10nmo_Form_Configuration::getPackLanguageCount($target_path);
+      if (!$language_count) {
+        // contains no languages -> delete
+        CRM_L10nmo_Form_Configuration::rrmdir($target_path);
+        CRM_Core_Session::setStatus(E::ts("ZIP file did not contain any languages!<br/>Be sure that your file content has the following structure:<code><br/>en_US/LC_MESSAGES/civicrm.mo<br/>de_DE/LC_MESSAGES/civicrm.mo<br/>es_MX/LC_MESSAGES/civicrm.mo<br/>...</code>"), E::ts("Failure"), 'error');
+        CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/l10nx/custom_upload', 'reset=0'));
+      }
 
       // create file
       civicrm_api3('File', 'create', [

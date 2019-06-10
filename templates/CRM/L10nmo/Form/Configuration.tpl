@@ -17,9 +17,9 @@
     <tr>
       <th></th>
       <th>{ts domain="de.systopia.l10nmo"}File{/ts}</th>
-      <th>{ts domain="de.systopia.l10nmo"}Domains{/ts}</th>
-      <th>{ts domain="de.systopia.l10nmo"}Locales{/ts}</th>
-      <th>{ts domain="de.systopia.l10nmo"}Upload{/ts}</th>
+      <th>{ts domain="de.systopia.l10nmo"}Used for Domains{/ts}</th>
+      <th>{ts domain="de.systopia.l10nmo"}Used for Locales{/ts}</th>
+      <th>{ts domain="de.systopia.l10nmo"}Uploaded{/ts}</th>
       <th>{ts domain="de.systopia.l10nmo"}Order{/ts}</th>
       <th></th>
     </tr>
@@ -36,7 +36,7 @@
         {$form.$active.html}
       </td>
       <td>
-        <span title="{$line.description}"><code>{$line.name}</code>{if $line.type == 'p'}> {ts domain="de.systopia.l10nmo"}(pack){/ts}{/if}</span>
+        <span title="{$line.description}"><code>{$line.name}</code>{if $line.type == 'p'} {ts domain="de.systopia.l10nmo"}(pack){/ts}{/if}</span>
       </td>
       <td>
         {$form.$domain.html}
