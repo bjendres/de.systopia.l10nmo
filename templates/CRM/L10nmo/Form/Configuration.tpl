@@ -49,10 +49,10 @@
         {$line.upload_date|crmDate}
       </td>
       <td>
-        <a class="crm-weight-arrow" onclick="l10nx_execute_command('first:{$line_nr}');"><img src="{$config->userFrameworkResourceURL}/i/arrow/first.gif" title="{ts domain="de.systopia.l10nmo"}Move to top{/ts}" alt="{ts domain="de.systopia.l10nmo"}Move to top{/ts}" class="order-icon"></a>
-        <a class="crm-weight-arrow" onclick="l10nx_execute_command('up:{$line_nr}');"><img src="{$config->userFrameworkResourceURL}/i/arrow/up.gif" title="{ts domain="de.systopia.l10nmo"}Move up one row{/ts}" alt="{ts domain="de.systopia.l10nmo"}Move up one row{/ts}" class="order-icon"></a>
-        <a class="crm-weight-arrow" onclick="l10nx_execute_command('down:{$line_nr}');"><img src="{$config->userFrameworkResourceURL}/i/arrow/down.gif" title="{ts domain="de.systopia.l10nmo"}Move down one row{/ts}" alt="{ts domain="de.systopia.l10nmo"}Move down one row{/ts}" class="order-icon"></a>
-        <a class="crm-weight-arrow" onclick="l10nx_execute_command('last:{$line_nr}');"><img src="{$config->userFrameworkResourceURL}/i/arrow/last.gif" title="{ts domain="de.systopia.l10nmo"}Move to bottom{/ts}" alt="{ts domain="de.systopia.l10nmo"}Move to bottom{/ts}" class="order-icon"></a>
+        <a class="crm-weight-arrow crm-hover-button" onclick="l10nx_execute_command('first:{$line_nr}');"><img src="{$config->userFrameworkResourceURL}/i/arrow/first.gif" title="{ts domain="de.systopia.l10nmo"}Move to top{/ts}" alt="{ts domain="de.systopia.l10nmo"}Move to top{/ts}" class="order-icon"></a>
+        <a class="crm-weight-arrow crm-hover-button" onclick="l10nx_execute_command('up:{$line_nr}');"><img src="{$config->userFrameworkResourceURL}/i/arrow/up.gif" title="{ts domain="de.systopia.l10nmo"}Move up one row{/ts}" alt="{ts domain="de.systopia.l10nmo"}Move up one row{/ts}" class="order-icon"></a>
+        <a class="crm-weight-arrow crm-hover-button" onclick="l10nx_execute_command('down:{$line_nr}');"><img src="{$config->userFrameworkResourceURL}/i/arrow/down.gif" title="{ts domain="de.systopia.l10nmo"}Move down one row{/ts}" alt="{ts domain="de.systopia.l10nmo"}Move down one row{/ts}" class="order-icon"></a>
+        <a class="crm-weight-arrow crm-hover-button" onclick="l10nx_execute_command('last:{$line_nr}');"><img src="{$config->userFrameworkResourceURL}/i/arrow/last.gif" title="{ts domain="de.systopia.l10nmo"}Move to bottom{/ts}" alt="{ts domain="de.systopia.l10nmo"}Move to bottom{/ts}" class="order-icon"></a>
       </td>
       <td>
         <a class="action-item crm-hover-button l10n-action-delete" onclick="l10nx_execute_command('delete:{$line_nr}');" title="{ts domain="de.systopia.l10nmo"}Delete Translation Files{/ts}">{ts domain="de.systopia.l10nmo"}delete{/ts}</a>
@@ -75,7 +75,7 @@
     <ul>
       <li><code>civicrm</code>: {ts domain="de.systopia.l10nmo"}CiviCRM User Interface. This should already be covered by CiviCRM's l10n pack, but you might want to use this to overwrite some translations.{/ts}</li>
       <li><code>civicrm-options</code>: {ts domain="de.systopia.l10nmo"}Defines the translation of all dropdown values (called OptionValues). These values should be stored in the 'data language' (e.g. English) and can then be translated on the fly for users in other languages. <strong>(experimental!)</strong>{/ts}</li>
-      <li><code>civicrm-data</code>: {ts domain="de.systopia.l10nmo"}Offers translations for user generated data, e.g. event descriptions or activity subjects. <strong>(incomplete, experimental!)</strong>{/ts}</li>
+      <li><code>civicrm-data</code>: {ts domain="de.systopia.l10nmo"}Offers translations for user generated data, e.g. event descriptions or activity subjects. <strong>(under development, experimental!)</strong>{/ts}</li>
       <li><code>[extensions]</code>: {ts domain="de.systopia.l10nmo"}Each extension defines its own translation domain. Choose this to modify the translation of an extension's user interface. Remark: the extension has to use the correct localisation techniques for this to work.{/ts}</li>
     </ul>
   </p>

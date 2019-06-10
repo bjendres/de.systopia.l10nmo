@@ -12,7 +12,6 @@
 | written permission from the original author(s).        |
 +-------------------------------------------------------*}
 
-
 <div class="crm-section">
   <div class="label">{$form.type.label}</div>
   <div class="content">{$form.type.html}</div>
@@ -36,6 +35,8 @@
   <div class="content">{$form.description.html}</div>
   <div class="clear"></div>
 </div>
+
+{$form.update.html}
 
 <div class="crm-submit-buttons">
 {include file="CRM/common/formButtons.tpl" location="bottom"}
