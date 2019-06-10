@@ -24,13 +24,13 @@ class CRM_L10nmo_Form_Upload extends CRM_Core_Form {
   public function buildQuickForm() {
 
     // verify folders
-    $file_folder = CRM_L10nmo_Form_Configuration::getCustomTranslationFolder(FALSE);
+    $file_folder = CRM_L10nmo_Configuration::getCustomTranslationFolder(FALSE);
     if (!is_dir($file_folder) || !is_writeable($file_folder)) {
-      CRM_Core_Session::setStatus(E::ts("Cannot write to the folder for custom .MO files (%1).", [1 => $file_folder], E::ts("Configuration Error"), 'error'));
+      CRM_Core_Session::setStatus(E::ts("Cannot write to the folder for custom .MO files (%1).", [1 => $file_folder]), E::ts("Configuration Error"), 'error');
     }
-    $pack_folder = CRM_L10nmo_Form_Configuration::getCustomTranslationFolder(TRUE);
+    $pack_folder = CRM_L10nmo_Configuration::getCustomTranslationFolder(TRUE);
     if (!is_dir($pack_folder) || !is_writeable($pack_folder)) {
-      CRM_Core_Session::setStatus(E::ts("Cannot write to the folder for language packs (%1).", [1 => $pack_folder], E::ts("Configuration Error"), 'error'));
+      CRM_Core_Session::setStatus(E::ts("Cannot write to the folder for language packs (%1).", [1 => $pack_folder]), E::ts("Configuration Error"), 'error');
     }
 
     $this->add(
@@ -101,7 +101,7 @@ class CRM_L10nmo_Form_Upload extends CRM_Core_Form {
     if ($values['type'] == 'f') {
       // FILE UPLOAD
       // copy file to the target folder
-      $target_folder = CRM_L10nmo_Form_Configuration::getCustomTranslationFolder(FALSE);
+      $target_folder = CRM_L10nmo_Configuration::getCustomTranslationFolder(FALSE);
       $target_path = $target_folder . DIRECTORY_SEPARATOR . $values['file_name'] . '.mo';
       if (file_exists($target_path)) {
         CRM_Core_Session::setStatus(E::ts("File '%1.mp' already exists!", [1 => $values['file_name']]), E::ts("File Exists"), 'error');
@@ -123,7 +123,7 @@ class CRM_L10nmo_Form_Upload extends CRM_Core_Form {
 
     } else {
       // PACK UPLOAD
-      $target_folder = CRM_L10nmo_Form_Configuration::getCustomTranslationFolder(TRUE);
+      $target_folder = CRM_L10nmo_Configuration::getCustomTranslationFolder(TRUE);
       $target_path = $target_folder . DIRECTORY_SEPARATOR . $values['file_name'];
       if (file_exists($target_path)) {
         CRM_Core_Session::setStatus(E::ts("Directory '%1' already exists!", [1 => $values['file_name']]), E::ts("File Exists"), 'error');
@@ -142,13 +142,14 @@ class CRM_L10nmo_Form_Upload extends CRM_Core_Form {
       $zip->close();
 
       // verify extracted files
-      $language_count = CRM_L10nmo_Form_Configuration::getPackLanguageCount($target_path);
+      $language_count = CRM_L10nmo_Configuration::getPackLanguageCount($target_path);
       if (!$language_count) {
         // contains no languages -> delete
-        CRM_L10nmo_Form_Configuration::rrmdir($target_path);
+        CRM_L10nmo_Configuration::rrmdir($target_path);
         CRM_Core_Session::setStatus(E::ts("ZIP file did not contain any languages!<br/>Be sure that your file content has the following structure:<code><br/>en_US/LC_MESSAGES/civicrm.mo<br/>de_DE/LC_MESSAGES/civicrm.mo<br/>es_MX/LC_MESSAGES/civicrm.mo<br/>...</code>"), E::ts("Failure"), 'error');
         CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/l10nx/custom_upload', 'reset=0'));
       }
+      CRM_Core_Session::setStatus(E::ts("Translation pack contained %1 languages.", [1 => $language_count]), E::ts("Pack Imported"), 'info');
 
       // create file
       civicrm_api3('File', 'create', [

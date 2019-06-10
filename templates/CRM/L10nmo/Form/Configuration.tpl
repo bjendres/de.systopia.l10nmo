@@ -69,7 +69,7 @@
 
 
 {literal}
-  <script type="application/javascript">
+  <script type="text/javascript">
     /**
      * This will set the action parameter and then submit the form
      */

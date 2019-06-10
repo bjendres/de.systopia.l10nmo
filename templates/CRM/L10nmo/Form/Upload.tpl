@@ -43,7 +43,7 @@
 
 
 {literal}
-  <script type="application/javascript">
+  <script type="text/javascript">
     function l10nxShowSuffix() {
       let type = cj("#type").val();
       if (type == 'f') {
