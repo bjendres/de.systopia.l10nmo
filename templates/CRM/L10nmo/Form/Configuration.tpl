@@ -12,10 +12,11 @@
 | written permission from the original author(s).        |
 +-------------------------------------------------------*}
 
+
 <table class="l10nmo-config">
   <thead>
     <tr>
-      <th></th>
+      <th>{ts domain="de.systopia.l10nmo"}Use{/ts}</th>
       <th>{ts domain="de.systopia.l10nmo"}File{/ts}</th>
       <th>{ts domain="de.systopia.l10nmo"}Used for Domains{/ts}</th>
       <th>{ts domain="de.systopia.l10nmo"}Used for Locales{/ts}</th>
@@ -65,6 +66,31 @@
 
 <div class="crm-submit-buttons">
 {include file="CRM/common/formButtons.tpl" location="bottom"}
+</div>
+<br/>
+<div>
+  <h3>{ts domain="de.systopia.l10nmo"}About Custom Translation Files{/ts}</h3>
+  <p>{ts domain="de.systopia.l10nmo"}Here you can upload custom translation files. We distinguish between individual translation files (MO files), and set of those files already tagged with the language ("packs").{/ts}</p>
+  <p>{ts domain="de.systopia.l10nmo"}You can define for each uploaded translation file you have define which domain it is applied to:{/ts}
+    <ul>
+      <li><code>civicrm</code>: {ts domain="de.systopia.l10nmo"}CiviCRM User Interface. This should already be covered by CiviCRM's l10n pack, but you might want to use this to overwrite some translations.{/ts}</li>
+      <li><code>civicrm-options</code>: {ts domain="de.systopia.l10nmo"}Defines the translation of all dropdown values (called OptionValues). These values should be stored in the 'data language' (e.g. English) and can then be translated on the fly for users in other languages.{/ts}</li>
+      <li><code>civicrm-data</code>: {ts domain="de.systopia.l10nmo"}Offers translations for user generated data, e.g. event descriptions or activity subjects. <strong>(experimental!)</strong>{/ts}</li>
+      <li><code>[extensions]</code>: {ts domain="de.systopia.l10nmo"}Each extension defines its own translation domain. Choose this to modify the translation of an extension's user interface. Remark: the extension has to use the correct localisation techniques for this to work.{/ts}</li>
+    </ul>
+  </p>
+  {capture assign=l10nconfig}{crmURL p='civicrm/admin/l10nx' q="reset=1"}{/capture}
+  <p>{ts domain="de.systopia.l10nmo" 1=$l10nconfig}Make sure you have <a href="%1">configured the extended localisation</a> accordingly.{/ts}</p>
+
+  <h3>{ts domain="de.systopia.l10nmo"}Where do I get these files?{/ts}</h3>
+  <p>{ts domain="de.systopia.l10nmo"}First you would have to get a "template" file (PO file). You can do this for example in one of the following ways:{/ts}
+    <ul>
+      <li>{ts domain="de.systopia.l10nmo"}Generate templates: TODO{/ts}</li>
+      <li>{ts domain="de.systopia.l10nmo"}Capture strings: If you install the <a href="https://github.com/bjendres/de.systopia.l10nprofiler">Profiler extension</a>, you can use that to capture the strings used by a specific workflow.{/ts}</li>
+      <li>{ts domain="de.systopia.l10nmo"}From others: Obviously, you can also get these files from other users. So far, however, there is not a common pool of such files, so just contact e.g. <code>@bjoern.endres</code> on Mattermost.{/ts}</li>
+    </ul>
+  </p>
+  <p>{ts domain="de.systopia.l10nmo"}You can then go on and edit these (.PO) files to your liking with a specialised editor like <a href="https://poedit.net">POEdit</a>. The resulting (.MO) files can be uploaded here.{/ts}</p>
 </div>
 
 
