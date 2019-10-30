@@ -110,7 +110,10 @@ class CRM_L10nmo_Form_Upload extends CRM_Core_Form {
     // verify file
     $upload_file = $_FILES['upload_file'];
     if ($values['type'] == 'f') {
-      if ($upload_file['type'] != 'application/x-gettext-translation') {
+      if ($upload_file['type'] == 'application/octet-stream') {
+        CRM_Core_Session::setStatus(E::ts("Warning: The system couldn't reliably identify file '%1' as a gettext .mo file!", [1 => $upload_file['name']]), E::ts("File Type Unclear"), 'warning');
+
+      } elseif ($upload_file['type'] != 'application/x-gettext-translation') {
         CRM_Core_Session::setStatus(E::ts("Submitted file '%1' is not a gettext .mo file!", [1 => $upload_file['name']]), E::ts("Wrong File Type"), 'error');
         CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/l10nx/custom_upload', 'reset=0'));
       }
