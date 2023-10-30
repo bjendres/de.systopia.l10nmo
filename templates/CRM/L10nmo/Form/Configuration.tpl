@@ -87,7 +87,7 @@
     <ol>
       {capture assign=l10ntemplates}{crmURL p='civicrm/l10nx/templates' q="reset=1"}{/capture}
       <li>{ts domain="de.systopia.l10nmo" 1=$l10ntemplates}<strong>Generate</strong>: Use <a href="%1">this built-in template generator</a>{/ts}</li>
-      <li>{ts domain="de.systopia.l10nmo"}<strong>Capture</strong>: If you install the <a href="https://github.com/bjendres/de.systopia.l10nprofiler">Profiler extension</a>, you can use that to record the strings used by a specific workflow.{/ts}</li>
+      <li>{ts domain="de.systopia.l10nmo"}<strong>Capture</strong>: If you install the <a href="https://github.com/systopia/de.systopia.l10nprofiler">Profiler extension</a>, you can use that to record the strings used by a specific workflow.{/ts}</li>
       <li>{ts domain="de.systopia.l10nmo"}<strong>From Others</strong>: Obviously, you can also get these files from other users. So far, however, there is not a common pool of such files, so just contact e.g. <code>@bjoern.endres</code> on <a href="https://chat.civicrm.org">Mattermost</a>.{/ts}</li>
     </ol>
   </p>
